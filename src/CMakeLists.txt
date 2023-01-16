@@ -12,6 +12,8 @@ add_library(
     Shapes
     Shapes/Line2D.cpp
     Shapes/Line2D.h
+    Shapes/Shape.h
+    Shapes/Shape.cpp
 )
 
 target_include_directories(Shapes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Shapes/) 
