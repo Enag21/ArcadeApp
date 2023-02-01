@@ -1,6 +1,9 @@
 #include "Screen.h"
 #include <Vector2D.h>
 #include <Line2D.h>
+#include <Triangle.h>
+#include <Circle.h>
+#include <AARectangle.h>
 #include <SDL2/SDL.h>
 #include <stdexcept>
 #include <cmath>
@@ -60,64 +63,94 @@ void Screen::Draw(const Vector2D& point, const Color& color)
 
 void Screen::Draw(const Line2D& line, const Color& color)
 {
-	uint32_t deltaX{};
-	uint32_t deltaY{};
+	int dx, dy;
 
-	uint32_t x0 = roundf(line.GetP0().getX());
-	uint32_t y0 = roundf(line.GetP0().getY());
-	uint32_t x1 = roundf(line.GetP1().getX());
-	uint32_t y1 = roundf(line.GetP1().getY());
+	int x0 = roundf(line.GetP0().getX());
+	int y0 = roundf(line.GetP0().getY());
+	int x1 = roundf(line.GetP1().getX());
+	int y1 = roundf(line.GetP1().getY());
 
-	deltaX = x1 - x0;
-	deltaY = y1 - y0;
+	dx = x1 - x0;
+	dy = y1 - y0;
 
-	signed const char incrementX( (deltaX > 0) - (deltaX < 0) ); // Evaluate to 1 -> (delta > 0) or -1 -> (delta < 0)
-	signed const char incrementY( (deltaY > 0) - (deltaY < 0) );
+	signed const char ix((dx > 0) - (dx < 0)); // evaluate to 1 or -1
+	signed const char iy((dy > 0) - (dy < 0));
 
-	deltaX = fabs(deltaX) * 2;
-	deltaY = fabs(deltaY) * 2;
+	dx = abs(dx) * 2;
+	dy = abs(dy) * 2;
 
-	// Draw first point
-	Draw(x0, x1, color);
+	Draw(x0, y0, color);
 
-	if (deltaX >= deltaY)
+	if(dx >= dy)
 	{
-		// Go along in the x
+		//go along in the x
 
-		uint32_t d{ deltaY - deltaX / 2 };
+		int d = dy - dx/2;
 
-		while (x0 != x1)
+		while(x0 != x1)
 		{
-			if (d >= 0)
+			if(d >= 0)
 			{
-				d -= deltaX;
-				y0 += incrementY;
+				d -= dx;
+				y0 += iy;
 			}
-			d += deltaY;
-			x0 += incrementX;
+
+			d += dy;
+			x0 += ix;
 
 			Draw(x0, y0, color);
 		}
 	}
 	else
 	{
-		// Go along in the y
+		//go along in y
+		int d = dx - dy/2;
 
-		uint32_t d{ deltaX - deltaY / 2 };
-
-		while (y0 != y1)
+		while(y0 != y1)
 		{
-			if (d >= 0)
+			if(d >= 0)
 			{
-				d -= deltaY;
-				x0 += incrementX;
+				d -= dy;
+				x0 += ix;
 			}
-			d += deltaX;
-			y0 += incrementY;
+
+			d += dx;
+			y0 += iy;
 
 			Draw(x0, y0, color);
 		}
 	}
+}
+
+void Screen::Draw(const Triangle& triangle, const Color& color)
+{
+	Line2D segment01{ triangle.GetP0(), triangle.GetP1() };
+	Line2D segment12{ triangle.GetP1(), triangle.GetP2() };
+	Line2D segment20{ triangle.GetP2(), triangle.GetP0() };
+
+	Draw(segment01, color);
+	Draw(segment12, color);
+	Draw(segment20, color);
+}
+
+void Screen::Draw(const Circle& circle, const Color& color)
+{
+
+}
+
+void Screen::Draw(const AARectangle& rect, const Color& color)
+{
+	auto points{ rect.GetPoints() };
+
+	Line2D segment01{ points[0], points[1] };	
+	Line2D segment12{ points[1], points[2] };	
+	Line2D segment23{ points[2], points[3] };	
+	Line2D segment34{ points[3], points[0] };
+
+	Draw(segment01, color);
+	Draw(segment12, color);
+	Draw(segment23, color);
+	Draw(segment34, color);
 }
 
 void Screen::ClearScreen()

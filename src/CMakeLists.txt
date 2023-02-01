@@ -14,6 +14,12 @@ add_library(
     Shapes/Line2D.h
     Shapes/Shape.h
     Shapes/Shape.cpp
+    Shapes/Triangle.cpp
+    Shapes/Triangle.h
+    Shapes/AARectangle.cpp
+    Shapes/AARectangle.h
+    Shapes/Circle.cpp    
+    Shapes/Circle.h
 )
 
 target_include_directories(Shapes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Shapes/) 
