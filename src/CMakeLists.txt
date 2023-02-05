@@ -61,3 +61,11 @@ add_library(
 target_include_directories(App PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/App/)
 
 target_link_libraries(App PRIVATE SDL2::SDL2 Shapes Graphics Scenes)
+
+add_library(
+    Input
+    Input/InputAction.h
+    Input/InputAction.cpp
+    Input/GameController.h
+    Input/GameController.cpp
+)
