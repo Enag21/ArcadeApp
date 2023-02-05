@@ -40,6 +40,18 @@ target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Graphics/
 
 target_link_libraries(Graphics PRIVATE Utils Shapes SDL2::SDL2)
 
+
+add_library(
+    Scenes
+    Scenes/Scene.h
+    Scenes/ArcadeScene.h
+    Scenes/ArcadeScene.cpp
+    )
+    
+target_include_directories(Scenes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Scenes/)
+
+target_link_libraries(Scenes PRIVATE Graphics Shapes)
+
 add_library(
     App
     App/App.h
@@ -48,4 +60,4 @@ add_library(
 
 target_include_directories(App PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/App/)
 
-target_link_libraries(App PRIVATE SDL2::SDL2 Shapes Graphics)
+target_link_libraries(App PRIVATE SDL2::SDL2 Shapes Graphics Scenes)
