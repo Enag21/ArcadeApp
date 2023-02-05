@@ -1,72 +1,91 @@
 #include "ScreenBuffer.h"
 #include <SDL2/SDL.h>
 #include <utility>
+#include <cassert>
 
-
-
-
-ScreenBuffer::ScreenBuffer(uint32_t format, int width, int height)
-	:	m_Surface{ SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format) }
+ScreenBuffer::ScreenBuffer(): mSurface(nullptr)
 {
+
 }
 
-ScreenBuffer::ScreenBuffer(const ScreenBuffer& src)
+ScreenBuffer::ScreenBuffer(const ScreenBuffer& screenBuffer)
 {
-	m_Surface.reset(SDL_CreateRGBSurfaceWithFormat(0, src.m_Surface->w, src.m_Surface->h, 0, src.m_Surface->format->format));
+	mSurface = SDL_CreateRGBSurfaceWithFormat(0, screenBuffer.mSurface->w, screenBuffer.mSurface->h, 0, screenBuffer.mSurface->format->format);
 
-	SDL_BlitSurface(src.m_Surface.get(), nullptr, m_Surface.get(), nullptr);
+	SDL_BlitSurface(screenBuffer.mSurface, nullptr, mSurface, nullptr);
 }
 
 ScreenBuffer::~ScreenBuffer()
 {
-	if (m_Surface)
+	if(mSurface)
 	{
-		SDL_FreeSurface(m_Surface.get());
-		m_Surface.release();
+		SDL_FreeSurface(mSurface);
 	}
 }
 
-ScreenBuffer& ScreenBuffer::operator=(const ScreenBuffer& rhs)
+ScreenBuffer& ScreenBuffer::operator=(const ScreenBuffer& screenBuffer)
 {
-	ScreenBuffer temp{ rhs };
-	swap(temp);
+	if(this == &screenBuffer)
+	{
+		return *this;
+	}
+
+	if(mSurface != nullptr)
+	{
+		SDL_FreeSurface(mSurface);
+		mSurface = nullptr;
+	}
+
+	if(screenBuffer.mSurface != nullptr)
+	{
+		mSurface = SDL_CreateRGBSurfaceWithFormat(0, screenBuffer.mSurface->w, screenBuffer.mSurface->h, 0, screenBuffer.mSurface->format->format);
+
+		SDL_BlitSurface(screenBuffer.mSurface, nullptr, mSurface, nullptr);
+	}
+
 	return *this;
+
 }
 
-void ScreenBuffer::Clear(const Color& color)
+void ScreenBuffer::Init(uint32_t format, uint32_t width, uint32_t height)
 {
-	if (m_Surface)
+	mSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format);
+	Clear();
+}
+
+void ScreenBuffer::Clear(const Color& c)
+{
+	assert(mSurface);
+	if(mSurface)
 	{
-		SDL_FillRect(m_Surface.get(), nullptr, color.GetPixelColor());
+		SDL_FillRect(mSurface, nullptr, c.GetPixelColor());
 	}
 }
 
 void ScreenBuffer::SetPixel(const Color& color, int x, int y)
 {
-	if (m_Surface && (y < m_Surface->h && y >= 0 && x < m_Surface->w && x >= 0))
+	assert(mSurface);
+
+	if(mSurface && (y < mSurface->h && y >= 0 && x >= 0 && x < mSurface->w))
 	{
-		SDL_LockSurface(m_Surface.get());
+		SDL_LockSurface(mSurface);
 
-		uint32_t* pixels = (uint32_t*)m_Surface->pixels;
-		size_t index = GetIndex(y, x);
+			uint32_t * pixels = (uint32_t*)mSurface->pixels;
 
-		pixels[index] = color.GetPixelColor();
+			size_t index = GetIndex(y, x);
+			Color surfaceColor = Color(pixels[index]); //destinationColor
+			pixels[index] = Color::Evaluate1MinusSourceAlpha(color, surfaceColor).GetPixelColor();
 
-		SDL_UnlockSurface(m_Surface.get());
+			SDL_UnlockSurface(mSurface);
 	}
-}
-
-void ScreenBuffer::swap(ScreenBuffer& other) noexcept
-{
-	std::swap(m_Surface, other.m_Surface);
 }
 
 uint32_t ScreenBuffer::GetIndex(int r, int c)
 {
-	return r * m_Surface->w + c;
-}
-
-void swap(ScreenBuffer& first, ScreenBuffer& second) noexcept
-{
-	first.swap(second);
+	assert(mSurface);
+	if(mSurface)
+	{
+		return r * mSurface->w + c;
+	}
+	return 0;
 }

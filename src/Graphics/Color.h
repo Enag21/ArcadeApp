@@ -14,6 +14,11 @@ public:
 	static const SDL_PixelFormat* m_Format;
 	static void InitColorFormat(const SDL_PixelFormat* format);
 
+	// Blending equation
+	// SourceRGB * sourceAlpha + DestinationRGB * (1 - sourceAlpha)
+
+	static Color Evaluate1MinusSourceAlpha(const Color& source, const Color& destination);
+
 	static Color Black() { return Color{ 0, 0, 0, 255 }; }
 	static Color White() { return Color{ 255, 255, 255, 255 }; }
 	static Color Red() { return Color{ 255, 0, 0, 255 }; }

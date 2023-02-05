@@ -5,56 +5,58 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 #include "ScreenBuffer.h"
 #include "Color.h"
 
 class Vector2D;
 class Line2D;
 class Triangle;
-class Circle;
 class AARectangle;
+class Circle;
 struct SDL_Window;
 struct SDL_Surface;
 
 class Screen
 {
 public:
-
-	Screen() = default;
-	Screen(uint32_t width, uint32_t height, uint32_t mag);
+	Screen();
 	~Screen();
 
-	// Copy assignmetn or construction is not allowed
-	Screen(const Screen& src) = delete;
-	Screen(Screen&& src) = delete;
-	Screen& operator=(const Screen& rhs) = delete;
-	Screen& operator=(Screen&& rhs) = delete;
+	SDL_Window* Init(uint32_t w, uint32_t h, uint32_t mag);
+	void SwapScreens();
 
-	void SwapScreen();
-	inline void SetClearColor(const Color& clearColor) { m_ClearColor = clearColor; }
-	inline uint32_t Width() const { return m_Width; }
-	inline uint32_t Height() const { return m_Height; }
+	inline void SetClearColor(const Color& clearColor) {mClearColor = clearColor;}
+	inline uint32_t Width() const {return mWidth;}
+	inline uint32_t Height() const {return mHeight;}
 
-	// Draw methods
+	//Draw Methods go here
+
 	void Draw(int x, int y, const Color& color);
 	void Draw(const Vector2D& point, const Color& color);
 	void Draw(const Line2D& line, const Color& color);
-	void Draw(const Triangle& triangle, const Color& color);
-	void Draw(const Circle& circle, const Color& color);
-	void Draw(const AARectangle& rect, const Color& color);
+	void Draw(const Triangle& triangle, const Color& color, bool fill = false, const Color& fillColor = Color::White());
+	void Draw(const AARectangle& rect, const Color& color, bool fill = false, const Color& fillColor = Color::White());
+	void Draw(const Circle& circle, const Color& color, bool fill = false, const Color& fillColor = Color::White());
+	void DrawBoard(size_t tilesize);
 
 private:
 
+	Screen(const Screen& screen);
+	Screen& operator=(const Screen& screen);
+
 	void ClearScreen();
+	void FillPoly(const std::vector<Vector2D>& points, const Color& color);
+	uint32_t mWidth;
+	uint32_t mHeight;
 
-	uint32_t m_Width{};
-	uint32_t m_Height{};
+	Color mClearColor;
+	ScreenBuffer mBackBuffer;
 
-	Color m_ClearColor{};
-	ScreenBuffer m_BackBuffer{};
-
-	SDL_Window* m_Window{ nullptr };
-	SDL_Surface* m_Surface{ nullptr };
+	SDL_Window* moptrWindow;
+	SDL_Surface* mnoptrWindowSurface;
 };
 
-#endif // !SCREEN_H
+
+
+#endif /* GRAPHICS_SCREEN_H_ */

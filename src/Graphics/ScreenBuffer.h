@@ -12,26 +12,26 @@ struct SDL_Surface;
 class ScreenBuffer
 {
 public:
-	ScreenBuffer() = default;
-	ScreenBuffer(uint32_t format, int width, int height);
-	ScreenBuffer(const ScreenBuffer& src);
+	ScreenBuffer();
+	ScreenBuffer(const ScreenBuffer& screenBuffer);
 	~ScreenBuffer();
 
-	ScreenBuffer& operator=(const ScreenBuffer& rhs);
+	ScreenBuffer& operator=(const ScreenBuffer& screenBuffer);
 
-	inline SDL_Surface* GetSurface() { return m_Surface.get(); }
+	void Init(uint32_t format, uint32_t width, uint32_t h);
 
-	void Clear(const Color& color = Color::Black());
+	inline SDL_Surface * GetSurface() {return mSurface;}
+
+	void Clear(const Color& c = Color::Black());
+
 	void SetPixel(const Color& color, int x, int y);
-	void swap(ScreenBuffer& other) noexcept;
 
 private:
 
-	std::unique_ptr< SDL_Surface> m_Surface{ nullptr };
+	SDL_Surface * mSurface;
 	uint32_t GetIndex(int r, int c);
 };
 
-void swap(ScreenBuffer& first, ScreenBuffer& second) noexcept;
 
 
 #endif // !SCREEN_BUFFER_H
