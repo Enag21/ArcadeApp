@@ -40,6 +40,7 @@ public:
 	double Distance(const Vector2D& vector) const;
 	Vector2D ProjectOnTo(const Vector2D& src) const;
 	double AngleBetween(const Vector2D& src) const;
+	void Rotate(float angle, const Vector2D& aroundPoint);
 	Vector2D Reflect(const Vector2D& normal) const;
 	Vector2D RotationResult(double angle) const;
 

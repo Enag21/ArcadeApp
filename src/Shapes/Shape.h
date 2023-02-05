@@ -11,6 +11,7 @@ public:
     virtual ~Shape() = default;
     inline virtual std::vector<Vector2D> GetPoints() const { return m_Points; }
     virtual void MoveBy(const Vector2D& deltaOffSet);
+    // virtual void MoveTo(const Vector2D& position) = 0; 
 
 protected:
     std::vector<Vector2D> m_Points{};

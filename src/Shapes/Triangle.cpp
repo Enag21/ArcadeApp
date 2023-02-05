@@ -35,3 +35,9 @@ float Triangle::Area(const Vector2D& p0, const Vector2D& p1, const Vector2D& p2)
 {
     return fabs(0.5 * (p0.getX() * (p1.getY() - p2.getY()) + p1.getX() * (p0.getY() - p2.getY()) + p2.getX() * (p0.getY() * p1.getY())));
 }
+
+/* void Triangle::MoveTo(const Vector2D& position)
+{
+    Vector2D deltaOffset{ position - GetCenterPoint() };
+    MoveBy(deltaOffset);
+} */

@@ -19,6 +19,8 @@ public:
 
     virtual Vector2D GetCenterPoint() const override;
 
+    // virtual void MoveTo(const Vector2D& position) override; 
+
     float Area() const;
 
     bool ContainsPoint(const Vector2D& point) const;
